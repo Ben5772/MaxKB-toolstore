@@ -1,9 +1,9 @@
-name: AWS 综合服务管理
+name: AWS
 tags:
   - 云资源管理
   - 数据库管理
   - 对象存储
   - 无服务器计算
   - 日志监控
-title: AWS 多服务综合管理平台（S3/Lambda/RDS/DynamoDB/CloudWatch）
+title: AWS
 description: 通过单一接口管理多种 AWS 服务，支持 S3 对象存储、Lambda 无服务器函数、RDS 数据库、DynamoDB NoSQL 数据库和 CloudWatch 日志服务，所有配置参数通过函数签名传入
