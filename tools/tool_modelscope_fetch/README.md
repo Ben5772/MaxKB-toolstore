@@ -53,69 +53,8 @@ pip install requests
 | `timeout_init` | `int` | `30` | Initialize 超时时间（秒） | `30` |
 | `timeout_call` | `int` | `60` | Tool Call 超时时间（秒） | `60` |
 
-## 四、使用示例
 
-### 4.1 基础用法
-
-```python
-from fetch_mcp import fetch_mcp_server
-
-# 最简单的用法，只提供 URL
-result = fetch_mcp_server(url="https://example.com/article")
-
-if result["success"]:
-    print(f"文档名称：{result['document_name']}")
-    print(f"内容长度：{result['content_length']}")
-    print(f"内容预览：{result['content'][:200]}...")
-else:
-    print(f"错误：{result.get('error', '未知错误')}")
-```
-
-### 4.2 自定义配置
-
-```python
-# 使用自定义配置和认证
-result = fetch_mcp_server(
-    url="https://example.com/tech-report",
-    custom_name="AI 技术分析报告",
-    max_length=5000,
-    ignore_robots=True,
-    mcp_server_url="https://your-custom-mcp.com/mcp",
-    api_key="your-secret-key",
-    timeout_init=60,
-    timeout_call=120
-)
-```
-
-### 4.3 在 MaxKB 中使用
-
-在 MaxKB 智能体平台中配置工具时，只需填写必需参数 `url`，其他参数可使用默认值：
-
-```json
-{
-  "url": "https://example.com/news/ai-breakthrough"
-}
-```
-
-或自定义所有参数：
-
-```json
-{
-  "url": "https://example.com/research",
-  "custom_name": "最新 AI 研究",
-  "max_length": 8000,
-  "ignore_robots": true,
-  "mcp_server_url": "https://custom-mcp.example.com/mcp",
-  "api_key": "sk-xxx",
-  "protocol_version": "2024-11-05",
-  "client_name": "maxkb",
-  "client_version": "1.0",
-  "timeout_init": 30,
-  "timeout_call": 90
-}
-```
-
-## 五、返回结果说明
+## 四、返回结果说明
 
 ### 成功响应
 
@@ -139,7 +78,7 @@ result = fetch_mcp_server(
 }
 ```
 
-## 六、注意事项
+## 五、注意事项
 
 1. **MCP 协议版本兼容性**：当前默认使用 `"2024-11-05"` 协议版本，如需使用其他版本请通过 `protocol_version` 参数指定。
 
@@ -151,7 +90,7 @@ result = fetch_mcp_server(
 
 4. **字符数限制**：`max_length` 参数会传递给 MCP 服务，由服务端控制返回内容的最大长度。
 
-5. **robots.txt 处理**：`ignore_robots=True` 时会跳过 robots.txt 检查，直接抓取网页内容。
+5. **robots.txt 处理**：魔搭云端服务无法跳过robot.txt，如需跳过需要自建本地服务，`ignore_robots=True` 时会跳过 robots.txt 检查，直接抓取网页内容。
 
 6. **文档命名规则**：
    - 如果提供 `custom_name`，则使用该名称
@@ -160,9 +99,3 @@ result = fetch_mcp_server(
 
 7. **错误处理**：所有网络错误、协议错误都会返回包含 `error` 字段的字典，便于调试和日志记录。
 
-## 七、支持
-
-如遇问题或需要更多技术支持，请参考：
-- ModelScope MCP 官方文档
-- MaxKB 工具开发规范
-- 提交 Issue 至项目仓库
