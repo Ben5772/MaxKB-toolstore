@@ -1,5 +1,9 @@
-name: AWS EC2 Pulumi 管理
+name: AWS 综合服务管理
 tags:
   - 云资源管理
-title: 使用 Pulumi Automation API 管理 AWS EC2 实例
-description: 通过 Pulumi Automation API 实现对 AWS EC2 实例的创建、查询、更新和删除操作，支持 AK/SK 参数传入和自动操作识别
+  - 数据库管理
+  - 对象存储
+  - 无服务器计算
+  - 日志监控
+title: AWS 多服务综合管理平台（S3/Lambda/RDS/DynamoDB/CloudWatch）
+description: 通过单一接口管理多种 AWS 服务，支持 S3 对象存储、Lambda 无服务器函数、RDS 数据库、DynamoDB NoSQL 数据库和 CloudWatch 日志服务，所有配置参数通过函数签名传入
