@@ -1,0 +1,5 @@
+name: ModelScope Fetch MCP
+tags:
+  - 内容处理
+title: 通过 ModelScope MCP 服务抓取网页并转换为 Markdown
+description: 调用 ModelScope 云端 MCP 服务，将网页内容抓取并转换为 Markdown 格式，支持自定义参数和认证配置
