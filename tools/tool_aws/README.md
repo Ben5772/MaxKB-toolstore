@@ -1,119 +1,158 @@
-# AWS EC2 Pulumi 管理工具
+# AWS 综合服务管理工具
 
-使用 Pulumi Automation API 管理 AWS EC2 实例，支持 CRUD 全生命周期管理。
+通过单一接口管理多种 AWS 服务，支持 S3、Lambda、RDS、DynamoDB、CloudWatch Logs 等主流服务。
 
 ## 功能特性
 
-- ✅ **Create** - 创建 EC2 实例
-- ✅ **Read/Get** - 查询 EC2 实例信息
-- ✅ **Update** - 更新 EC2 实例配置
-- ✅ **Delete** - 删除 EC2 实例
-- 🔄 **自动识别** - 根据参数自动推断操作类型
+### 支持的服务
+
+- ✅ **S3** - 对象存储服务（7 个操作）
+- ✅ **Lambda** - 无服务器计算（6 个操作）
+- ✅ **RDS** - 关系型数据库（7 个操作）
+- ✅ **DynamoDB** - NoSQL 数据库（9 个操作）
+- ✅ **CloudWatch Logs** - 日志服务（7 个操作）
+
+### 核心优势
+
 - 🔐 **安全凭证** - AK/SK 通过参数传入，不存储在代码中
+- 🎯 **统一接口** - 单一函数管理所有 AWS 服务
+- 📝 **完整文档** - 详细的参数说明和使用示例
+- ⚡ **即开即用** - 无需额外配置，直接调用
 
 ## 输入参数
+
+### 全局必需参数（所有服务都需要）
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
 | access_key | string | ✅ | AWS Access Key ID |
 | secret_key | string | ✅ | AWS Secret Access Key |
-| region | string | ❌ | AWS 区域，默认 `us-east-1` |
-| action | string | ❌ | 操作类型：`auto`/`create`/`update`/`delete`/`get`，默认 `auto` |
-| instance_id | string | 条件 | EC2 实例 ID（update/delete/get 时必填） |
-| ami | string | 条件 | AMI ID（create/update 时必填） |
-| instance_type | string | ❌ | 实例类型，默认 `t2.micro` |
-| key_name | string | ❌ | SSH 密钥对名称 |
-| subnet_id | string | ❌ | 子网 ID |
-| security_group_ids | string | ❌ | 安全组 ID 列表（JSON 数组字符串） |
-| tags | string | ❌ | 标签（JSON 对象字符串） |
-| project_name | string | ❌ | Pulumi 项目名称 |
-| stack_name | string | ❌ | Pulumi Stack 名称 |
+| region | string | ✅ | AWS 区域，如 `us-east-1` |
+| service | string | ✅ | 服务名称：`s3`/`lambda`/`rds`/`dynamodb`/`cloudwatch_logs` |
+| action | string | ✅ | 操作名称，如 `list_buckets`/`create_function` 等 |
 
-## Action 自动识别规则
+### 各服务特有参数
 
-当 `action=auto` 时，根据以下规则自动推断操作：
-
-| instance_id | ami | 推断操作 |
-|-------------|-----|----------|
-| 无 | 有 | create |
-| 有 | 有 | update |
-| 有 | 无 | delete |
-| 无 | 无 | get（查询所有实例） |
+详见 [AWS_SERVICES_PARAMS.md](AWS_SERVICES_PARAMS.md)，包含每个服务的详细参数说明和必填要求。
 
 ## 调用示例
 
-### 创建实例
+### S3 - 列出所有桶
 
 ```python
-result = manage_ec2_sync(
+result = manage_aws_services(
     access_key="AKIAIOSFODNN7EXAMPLE",
     secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-    action="create",
-    ami="ami-0c55b159cbfafe1f0",
-    instance_type="t2.micro",
-    key_name="my-key",
-    tags='{"Name": "MyInstance", "Env": "Dev"}'
+    region="us-east-1",
+    service="s3",
+    action="list_buckets"
 )
 ```
 
-### 查询实例
+### S3 - 上传对象
 
 ```python
-result = manage_ec2_sync(
+result = manage_aws_services(
     access_key="AKIAIOSFODNN7EXAMPLE",
     secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-    action="get",
-    instance_id="i-1234567890abcdef0"
+    region="us-east-1",
+    service="s3",
+    action="upload_object",
+    bucket_name="my-bucket",
+    object_key="path/to/file.txt",
+    file_content="Hello, World!"
 )
 ```
 
-### 删除实例
+### Lambda - 列出所有函数
 
 ```python
-result = manage_ec2_sync(
+result = manage_aws_services(
     access_key="AKIAIOSFODNN7EXAMPLE",
     secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-    action="delete",
-    instance_id="i-1234567890abcdef0"
+    region="us-east-1",
+    service="lambda",
+    action="list_functions"
 )
 ```
 
-### 自动推断（创建）
+### DynamoDB - 插入数据
 
 ```python
-# 有 ami 无 instance_id -> 自动识别为 create
-result = manage_ec2_sync(
+result = manage_aws_services(
     access_key="AKIAIOSFODNN7EXAMPLE",
     secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-    ami="ami-0c55b159cbfafe1f0",
-    instance_type="t2.micro"
+    region="us-east-1",
+    service="dynamodb",
+    action="put_item",
+    table_name="Users",
+    item='{"id": {"S": "123"}, "name": {"S": "John"}}'
+)
+```
+
+### CloudWatch Logs - 查询日志
+
+```python
+result = manage_aws_services(
+    access_key="AKIAIOSFODNN7EXAMPLE",
+    secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    region="us-east-1",
+    service="cloudwatch_logs",
+    action="filter_log_events",
+    log_group_name="/aws/lambda/my-function",
+    start_time="1609459200000",
+    end_time="1609545600000",
+    filter_pattern="ERROR"
 )
 ```
 
 ## 输出结果
 
+所有操作都返回统一格式：
+
 ```json
 {
     "success": true,
-    "action": "create",
-    "instance_id": "i-1234567890abcdef0",
-    "instance_state": "running",
-    "outputs": {
-        "public_ip": "52.1.2.3",
-        "private_ip": "10.0.1.2"
+    "service": "s3",
+    "action": "list_buckets",
+    "data": {
+        "buckets": ["bucket1", "bucket2"],
+        "count": 2
     },
     "error": null
+}
+```
+
+失败时：
+
+```json
+{
+    "success": false,
+    "service": "s3",
+    "action": "list_buckets",
+    "data": {},
+    "error": "Missing required parameter: access_key"
 }
 ```
 
 ## 依赖安装
 
 ```bash
-pip install pulumi pulumi-aws boto3
+pip install boto3
 ```
+
+## 文件说明
+
+- `1.0.0/ec2_manager.py` - EC2 管理工具（保留向后兼容）
+- `1.0.0/aws_services_manager.py` - AWS 综合服务管理器（新增）
+- `AWS_SERVICES_PARAMS.md` - 详细参数说明文档
+- `data.yaml` - 工具元数据配置
 
 ## 注意事项
 
-1. 确保 AWS 账号有操作 EC2 的权限
-2. 首次运行会自动下载 Pulumi 引擎（约 100MB）
-3. 临时工作目录位于 `/tmp/pulumi-workspace/`
+1. **权限管理** - 确保提供的凭证具有执行相应操作的最小权限
+2. **区域选择** - 不同服务在不同区域的可用性可能不同
+3. **JSON 参数** - 复杂参数（如 item、key 等）需要传入 JSON 格式字符串
+4. **错误处理** - 建议在使用时添加异常处理逻辑
+5. **凭证安全** - 不要将凭证硬编码在代码中，建议使用环境变量
+6. **详细文档** - 完整参数说明请查看 [AWS_SERVICES_PARAMS.md](AWS_SERVICES_PARAMS.md)
