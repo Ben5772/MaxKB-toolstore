@@ -1,6 +1,6 @@
 # AWS 综合服务管理工具
 
-通过单一接口管理多种 AWS 服务，支持 S3、Lambda、RDS、DynamoDB、CloudWatch Logs 等主流服务。
+本工具通过BOTO3实现CRUD多种 AWS 服务，经测试支持 S3、Lambda、RDS、DynamoDB、CloudWatch Logs。
 
 ## 功能特性
 
